@@ -1,0 +1,96 @@
+body
+{
+    text-align: center;
+    background-color: skyblue;
+}
+
+#Heading
+{
+    font-size: 60px;
+    text-decoration: underline;
+}
+
+#HeadingDayH, #HeadingDayM
+{
+    font-size: 30px;
+    text-decoration: wavy;
+}
+
+#HubLogo
+{
+    max-width: 400px;
+    width:80%;
+    max-height: 400px;
+    height:80%;
+}
+
+#SubjectPlace
+{
+   width: 200px;
+}
+
+table
+{
+    border-collapse: collapse;
+    max-width: 600px;
+    width: 75%;
+    margin: auto;
+    border: 5px solid #00000000;
+    border-radius: 100px;
+}
+
+td, th {
+    text-align: left;
+    padding: 8px;
+    font-size: 20px;
+}
+
+th 
+{
+    background-color: aliceblue;
+    border-bottom: 3px solid #00000000;
+}
+td 
+{
+    background-color: cadetblue;
+    
+    border-bottom: 3px solid #00000000;
+    border-bottom-style: dashed;
+}
+
+hr
+{
+    width: 20%;
+    max-width: 400px;
+    height: 5px;
+    background-color: aliceblue;
+    border-width: 5px;
+}
+
+#SubmitEdit, #SubmitChanges
+{
+    margin: 50px;
+}
+
+#FormDiv
+{
+  display:inline-block;
+}
+#Icon, .AddIcon, #DelIcon
+{
+  width: 20px;
+  height: 20px;
+  transition: 0.3s;
+}
+#Icon:hover, .AddIcon:hover, #DelIcon:hover
+{
+  background-color: #FFFFFF;
+  cursor: pointer;
+  color: white;
+}
+
+#fach
+{
+  display: inline-block;
+  vertical-align: middle;
+}
