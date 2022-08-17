@@ -1,0 +1,49 @@
+[
+  {
+    "dayName": "Sunday",
+    "Subjects": ["/"],
+    "Work": ["Keine Arbeit :)!"]
+  },
+  {
+    "dayName": "Monday",
+    "Subjects": ["Französisch", "Geschichte", "Englisch"],
+    "Work": [
+      "",
+      "",
+      ""
+    ]
+  },
+  {
+    "dayName": "Tuesday",
+    "Subjects": ["Kunst", "Informatik", "Englisch"],
+    "Work": [
+      "",
+      "",
+      ""
+    ]
+  },
+  {
+    "dayName": "Wednesday",
+    "Subjects": ["Sport", "Kunst", "Englisch"],
+    "Work": ["", "", ""]
+  },
+  {
+    "dayName": "Thursday",
+    "Subjects": ["Mathe", "English", "Erdkunde"],
+    "Work": ["", "", ""]
+  },
+  {
+    "dayName": "Friday",
+    "Subjects": ["Ethik", "Religion", "Geschichte"],
+    "Work": [
+      "",
+      "",
+      ""
+    ]
+  },
+  {
+    "dayName": "Saturday",
+    "Subjects": ["/"],
+    "Work": ["Keine Arbeit :)!"]
+  }
+]
