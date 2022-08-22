@@ -1,0 +1,704 @@
+// Images of the buttons are controlled here
+var Buttonsrc_H =
+  "https://cdn.glitch.global/44390784-7e95-45e7-b832-fab882e58d98/plus.png?v=1660477909955";
+var Buttonsrc_M =
+  "https://cdn.glitch.global/44390784-7e95-45e7-b832-fab882e58d98/plus.png?v=1660477909955";
+
+// Variable for preventing multiple SaveRequests after editing the tables
+var ClickSubmit = 0;
+
+//Request for getting the actual Data about the homework
+var DataRequest = new XMLHttpRequest();
+
+// Getting both table as elements
+var tableH = document.getElementById("TableToday");
+var tableM = document.getElementById("TableTommorow");
+
+// Words for reading the weekdays
+var daysWords = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+var daysWordsGerman = [
+  "Sonntag",
+  "Montag",
+  "Dienstag",
+  "Mittwoch",
+  "Donnerstag",
+  "Freitag",
+  "Samstag",
+];
+
+// Setting the actual Date
+const now = new Date();
+
+//  Calculate the dates for getting the right information from the request
+now.setDate(now.getDate());
+
+const tod = new Date();
+tod.setDate(tod.getDate() + 1);
+const tom = new Date();
+tom.setDate(tom.getDate() + 2);
+
+var today = tod.getDay();
+var tommorow = tom.getDay();
+
+var TableData;
+var TableDataNextWeek;
+var UpDa;
+var UpDaNeWe;
+var ii;
+var Valid = false;
+
+var dateM = false; //
+var dateD = false;
+
+if (today === 6) {
+  tod.setDate(tod.getDate() + 2);
+  GetAccessNextWeek();
+  dateM = true;
+}
+if (today === 0) {
+  tod.setDate(tod.getDate() + 1);
+  GetAccessNextWeek();
+  dateM = true;
+}
+if (tommorow === 6) {
+  tom.setDate(tom.getDate() + 2);
+  GetAccessNextWeek();
+  dateM = true;
+}
+if (tommorow === 0) {
+  tom.setDate(tom.getDate() + 2);
+  GetAccessNextWeek();
+  dateD = true;
+}
+if (tommorow === 1) {
+  tom.setDate(tom.getDate() + 1);
+  GetAccessNextWeek();
+  dateD = true;
+}
+
+function GetAccessNextWeek() // Function for getting the preview of the next week
+{
+  var DataRequestNextWeek = new XMLHttpRequest;
+  DataRequestNextWeek.open("GET", "https://10chub.glitch.me/infoNextWeek");
+  DataRequestNextWeek.onload = function () {
+  if (DataRequestNextWeek.status >= 200 && DataRequestNextWeek.status < 400) {
+    TableDataNextWeek = JSON.parse(DataRequestNextWeek.responseText);
+    // Start Building the tables and the html-page
+    //renderHTML(TableData);
+  } else {
+    console.log("We connected to the server, but it returned an error.");
+  }
+
+  DataRequestNextWeek.onerror = function () {
+    console.log("Connection error");
+  };
+};
+  DataRequestNextWeek.send();
+  console.log(TableDataNextWeek);
+}
+
+var today = tod.getDay();
+var tommorow = tom.getDay();
+
+// Getting actual data of the homework
+DataRequest.open("GET", "https://10chub.glitch.me/info");
+DataRequest.onload = function () {
+  if (DataRequest.status >= 200 && DataRequest.status < 400) {
+    TableData = JSON.parse(DataRequest.responseText);
+    // Start Building the tables and the html-page
+    renderHTML(TableData);
+  } else {
+    console.log("We connected to the server, but it returned an error.");
+  }
+
+  DataRequest.onerror = function () {
+    console.log("Connection error");
+  };
+
+  if (window.location.href === "https://10chub.glitch.me/edit") {
+    // Button for saving the changes to the server
+    let SaveBtn = document.getElementById("SubmitChanges");
+    SaveBtn.addEventListener("click", (event) => {
+      SubmitEdit();
+    });
+  }
+};
+
+DataRequest.send();
+
+// Building the both tables
+function renderHTML(data) {
+  renderTable(today, tableH, "");
+  renderTable(tommorow, tableM, "");
+}
+
+// Variable for saving and building the table structure/html code via renderTable()
+var tableEdit;
+
+function renderTable(index, tableElement, inputText, DisableDel) {
+  if (window.location.href === "https://10chub.glitch.me/edit") {
+    var Edit = true;
+  } else {
+    var Edit = false;
+  }
+
+  tableEdit = "<table>";
+
+  if (Edit) {
+    tableEdit += `
+    <tr>
+  <td>
+    <select id="fach_${index}" name="Fächer" >
+    <!--<option value="">---Bitte wähle ein Fach---</option>-->
+    <option value="Deutsch" id="Deutsch_${index}">Deutsch</option>
+    <option value="Mathe" id="Mathe_${index}">Mathe</option>
+    <option value="Erdkunde" id="Erdkunde_${index}">Erdkunde</option>
+    <option value="Englisch" id="Englisch_${index}">Englisch</option>
+    <option value="Kunst" id="Kunst_${index}">Kunst</option>
+    <option value="Chemie" id="Chemie_${index}">Chemie</option>
+    <option value="Informatik" id="Informatik_${index}">Informatik</option>
+    <option value="Latein" id="Latein_${index}">Latein</option>
+    <option value="Latein (Zusatzkurs)" id="Latein (Zusatzkurs)_${index}">Latein (Zusatzkurs)</option>
+    <option value="Ethik" id="Ethik_${index}">Ethik</option>
+    <option value="Katholische Religion" id="Katholische Religion_${index}">Katholische Religion</option>
+    <option value="Evangelische Religion" id="Evangelische Religion_${index}">Evangelische Religion</option>
+    <option value="Sport" id="Sport_${index}">Sport</option>
+    <option value="Spanisch" id="Spanisch_${index}">Spanisch</option>
+    <option value="Geschichte" id="Geschichte_${index}">Geschichte</option>
+    <option value="Physik" id="Physik_${index}">Physik</option>
+    <option value="Französisch" id="Französisch_${index}">Französisch</option>
+  </select>
+  </td>
+  <td>
+  <input type="text" id="TextFieldInput_${index}" value=${inputText}>
+  </td>
+  <td></td>
+  <td>`;
+    // Depeneding on the table, the image of the Icon is changed by the variables of each table
+    if (index === today) {
+      tableEdit += `<img src= "${Buttonsrc_H}" class = "AddIcon" id="AddIcon_${index}" onclick="submit_addFunction(0, ${index})">`;
+    } else {
+      tableEdit += `<img src= "${Buttonsrc_M}" class = "AddIcon" id="AddIcon_${index}" onclick="submit_addFunction(0, ${index})">`;
+    }
+    `</td>
+  </tr>
+  `;
+  }
+
+  tableEdit += `
+  <tr><th>Fächer</th><th>Aufgaben</th><th></th><th></th></tr>
+  `;
+
+  var htmlString = tableEdit;
+   if (dateM === true && index === today)
+  {
+    for (ii = 0; ii < TableDataNextWeek[index].Subjects.length; ii++) {
+    if (Edit) {
+      htmlString += `<tr>
+                           <td id='SubjectPlace'>${
+                             TableDataNextWeek[index].Subjects[ii]
+                           }</td>
+                           <td>${TableDataNextWeek[index].Work[ii].replace(
+                             // Function to remove reserved Characters to avoid bad influence of the html document (f.ex. "<")
+                             /[^\w\-]+/g,
+                             ""
+                           )}</td>
+                           <td id="IconTD">
+  <img src="https://cdn.glitch.global/44390784-7e95-45e7-b832-fab882e58d98/pencil_Icon.png?v=1660477476523" id="Icon" onclick="editFunction(${ii}, ${index})">
+  </td>`;
+      // If a table is in editmode, the delete Icon get disabled based on the "DisableDel" function parameter
+      if (DisableDel) {
+        htmlString += `<td id="IconTD">
+  <img src="https://cdn.glitch.global/44390784-7e95-45e7-b832-fab882e58d98/delete_Icon.png?v=1660477125278" id="DelIcon" style = "opacity: 0.4;" class = "DelButton_${index}">
+  </td>
+                        </tr>`;
+      } else {
+        htmlString += `<td id="IconTD">
+  <img src="https://cdn.glitch.global/44390784-7e95-45e7-b832-fab882e58d98/delete_Icon.png?v=1660477125278" id="DelIcon" onclick="delFunction(${ii}, ${index})" style = "opacity: 1;" class = "DelButton_${index}">
+  </td>
+                        </tr>`;
+      }
+    } else {
+      htmlString += `<tr>
+                           <td id='SubjectPlace'>${TableDataNextWeek[index].Subjects[ii]}</td>
+                           <td>${TableDataNextWeek[index].Work[ii]}</td>
+                           <td></td><td></td>
+                        </tr>`;
+    
+  }}
+    
+  }else if (dateD === true && index === tommorow)
+  {
+    for (ii = 0; ii < TableDataNextWeek[index].Subjects.length; ii++) {
+    if (Edit) {
+      htmlString += `<tr>
+                           <td id='SubjectPlace'>${
+                             TableDataNextWeek[index].Subjects[ii]
+                           }</td>
+                           <td>${TableDataNextWeek[index].Work[ii].replace(
+                             // Function to remove reserved Characters to avoid bad influence of the html document (f.ex. "<")
+                             /[^\w\-]+/g,
+                             ""
+                           )}</td>
+                           <td id="IconTD">
+  <img src="https://cdn.glitch.global/44390784-7e95-45e7-b832-fab882e58d98/pencil_Icon.png?v=1660477476523" id="Icon" onclick="editFunction(${ii}, ${index})">
+  </td>`;
+      // If a table is in editmode, the delete Icon get disabled based on the "DisableDel" function parameter
+      if (DisableDel) {
+        htmlString += `<td id="IconTD">
+  <img src="https://cdn.glitch.global/44390784-7e95-45e7-b832-fab882e58d98/delete_Icon.png?v=1660477125278" id="DelIcon" style = "opacity: 0.4;" class = "DelButton_${index}">
+  </td>
+                        </tr>`;
+      } else {
+        htmlString += `<td id="IconTD">
+  <img src="https://cdn.glitch.global/44390784-7e95-45e7-b832-fab882e58d98/delete_Icon.png?v=1660477125278" id="DelIcon" onclick="delFunction(${ii}, ${index})" style = "opacity: 1;" class = "DelButton_${index}">
+  </td>
+                        </tr>`;
+      }
+    } else {
+      htmlString += `<tr>
+                           <td id='SubjectPlace'>${TableDataNextWeek[index].Subjects[ii]}</td>
+                           <td>${TableDataNextWeek[index].Work[ii]}</td>
+                           <td></td><td></td>
+                        </tr>`;
+    
+  }}} else{
+  // Loop for adding the subjects parralel with the Homework of each
+  for (ii = 0; ii < TableData[index].Subjects.length; ii++) {
+    if (Edit) {
+      htmlString += `<tr>
+                           <td id='SubjectPlace'>${
+                             TableData[index].Subjects[ii]
+                           }</td>
+                           <td>${TableData[index].Work[ii].replace(
+                             // Function to remove reserved Characters to avoid bad influence of the html document (f.ex. "<")
+                             /[^\w\-]+/g,
+                             ""
+                           )}</td>
+                           <td id="IconTD">
+  <img src="https://cdn.glitch.global/44390784-7e95-45e7-b832-fab882e58d98/pencil_Icon.png?v=1660477476523" id="Icon" onclick="editFunction(${ii}, ${index})">
+  </td>`;
+      // If a table is in editmode, the delete Icon get disabled based on the "DisableDel" function parameter
+      if (DisableDel) {
+        htmlString += `<td id="IconTD">
+  <img src="https://cdn.glitch.global/44390784-7e95-45e7-b832-fab882e58d98/delete_Icon.png?v=1660477125278" id="DelIcon" style = "opacity: 0.4;" class = "DelButton_${index}">
+  </td>
+                        </tr>`;
+      } else {
+        htmlString += `<td id="IconTD">
+  <img src="https://cdn.glitch.global/44390784-7e95-45e7-b832-fab882e58d98/delete_Icon.png?v=1660477125278" id="DelIcon" onclick="delFunction(${ii}, ${index})" style = "opacity: 1;" class = "DelButton_${index}">
+  </td>
+                        </tr>`;
+      }
+    } else {
+      htmlString += `<tr>
+                           <td id='SubjectPlace'>${TableData[index].Subjects[ii]}</td>
+                           <td>${TableData[index].Work[ii]}</td>
+                           <td></td><td></td>
+                        </tr>`;
+    }
+  }}
+
+  htmlString += "</table>";
+
+  // Adding the construction of the tables/htmlString to the html page
+  tableElement.insertAdjacentHTML("beforeend", htmlString);
+}
+
+// Gets the id of the choosen option of the dropdown
+var fachID;
+
+// Get the choosen option of the dropdown
+var selectElement;
+var selectValue;
+
+// Get the text of the input
+var inputElement;
+
+// Get the text of the input
+var editID;
+
+function editFunction(item, index) {
+  //const actualObject = TableData;
+  
+   if ((dateD === true && index === tommorow) || (dateM === true && index === today))
+  {
+    console.log(typeof TableDataNextWeek);
+    var actualObject = TableDataNextWeek;
+  }
+      else
+      {
+        var actualObject = TableData;  
+      }
+    console.log(JSON.stringify(actualObject))
+  
+  console.log("dateD: " + dateD + " dateM: " + dateM + " index: " + index + " today: " + today + " tommorow: " + tommorow)
+
+  // Get the Work and Subject, where the user clicked the editbutton
+  var selectedWork = JSON.stringify(actualObject[index].Work[item]);
+  var subjectElement = actualObject[index].Subjects[item];
+
+  // Changes the Addbutton to the save Button
+  if (today === index) {
+    Buttonsrc_H =
+      "https://cdn.glitch.global/44390784-7e95-45e7-b832-fab882e58d98/content-save-edit.png?v=1660575148143";
+  } else {
+    Buttonsrc_M =
+      "https://cdn.glitch.global/44390784-7e95-45e7-b832-fab882e58d98/content-save-edit.png?v=1660575148143";
+  }
+
+  // Deletes and renders the actual table
+  if (today === index) {
+    tableH.innerHTML = "";
+    renderTable(index, tableH, selectedWork, true);
+  } else {
+    tableM.innerHTML = "";
+    renderTable(index, tableM, selectedWork, true);
+  }
+
+  //console.log(document.getElementById("fach_" + index).value);
+
+  // Change the dropdown and the textfield to the choosen subject
+  document.getElementById("fach_" + index).value = subjectElement;
+  editID = actualObject[index].Subjects.indexOf(subjectElement);
+  UpDa = JSON.stringify(actualObject);
+}
+
+function delFunction(item, index) {
+   if ((dateD === true && index === tommorow) || (dateM === true && index === today))
+  {
+    var actualObject = TableDataNextWeek;
+  }
+      else
+      {
+        var actualObject = TableData;  
+      }
+
+  // Deletes the choosen object
+
+  actualObject[index].Subjects.splice(item, 1);
+  console.log(actualObject[index].Subjects);
+  actualObject[index].Work.splice(item, 1);
+
+  // Then, delete the whole table and renders them again
+
+  if (today === index) {
+    tableH.innerHTML = "";
+    renderTable(index, tableH, "");
+  } else {
+    tableM.innerHTML = "";
+    renderTable(index, tableM, "");
+  }
+
+  // Updating the actual Object (later for submitting changes)
+  
+      if (dateM === false && dateD === false)
+      {
+        UpDa = JSON.stringify(actualObject);
+      }
+      else if ((dateM == true && index !== today) || (dateD === true && index !== tommorow))
+      {
+        UpDa = JSON.stringify(actualObject);
+      }
+      else if ((dateM === true && index === today) || (dateD === true && index === tommorow))
+      {
+        UpDaNeWe = JSON.stringify(actualObject);
+      }
+}
+
+function submit_addFunction(item, index) {
+  if (
+    // Check if the actual Button is an addbutton or an save button
+    document.getElementById("AddIcon_" + index).src ===
+    "https://cdn.glitch.global/44390784-7e95-45e7-b832-fab882e58d98/plus.png?v=1660477909955"
+  ) {
+    // Code for the Adding the Change (local)
+    Valid = false;
+    ValidInput(index, "plus");
+    if (Valid) {
+      // Only works, if the validation was passed with no problems
+      //console.dir(TableData[index]);
+
+      // Get the values of the dropdown and the input field
+      selectElement = document.getElementById("fach_" + index);
+      selectValue = selectElement.options[selectElement.selectedIndex].value;
+      fachID = document.getElementById(selectValue + "_" + index);
+      inputElement = document.getElementById("TextFieldInput_" + index);
+      
+  if ((dateD === true && index === tommorow) || (dateM === true && index === today))
+  {
+    var actualObject = TableDataNextWeek;
+  }
+      else
+      {
+        var actualObject = TableData;  
+      }
+
+      // Add the values to the TableData
+      actualObject[index].Subjects.push(fachID.innerHTML);
+      actualObject[index].Work.push(inputElement.value);
+
+      // Updates the tables depent which was choosen
+      if (index === today) {
+        tableH.innerHTML = "";
+        renderTable(index, tableH, "");
+      } else {
+        tableM.innerHTML = "";
+        renderTable(index, tableM, "");
+      }
+
+      // Updating the actual Object (later for submitting changes)
+      
+      if (dateM === false && dateD === false)
+      {
+        UpDa = JSON.stringify(actualObject);
+      }
+      else if ((dateM == true && index !== today) || (dateD === true && index !== tommorow))
+      {
+        UpDa = JSON.stringify(actualObject);
+      }
+      else if ((dateM === true && index === today) || (dateD === true && index === tommorow))
+      {
+        UpDaNeWe = JSON.stringify(actualObject);
+      }
+    }
+  } else {
+    // Code for the Save/Submit of the Change (local)
+    ValidInput(index, "submit");
+
+    if (Valid) {
+      // Only works, if the validation passed with no problems
+      
+ 
+  if ((dateD === true && index === tommorow) || (dateM === true && index === today))
+  {
+    var actualObject = TableDataNextWeek;
+  }
+      else
+      {
+        var actualObject = TableData;
+      }
+
+      // Get the values of the dropdown and the input field
+      selectElement = document.getElementById("fach_" + index);
+      selectValue = selectElement.options[selectElement.selectedIndex].value;
+      fachID = document.getElementById(selectValue + "_" + index);
+      inputElement = document.getElementById("TextFieldInput_" + index);
+
+      // Get the choosen subject
+      var subject = selectElement.options[selectElement.selectedIndex].value;
+
+      // Updates the actual Data (actualObject) with the inputfield and the dropdown
+      actualObject[index].Work[editID] = inputElement.value;
+      actualObject[index].Subjects[editID] = subject;
+
+      // Change the icon back to the plus icon
+      if (today === index) {
+        Buttonsrc_H =
+          "https://cdn.glitch.global/44390784-7e95-45e7-b832-fab882e58d98/plus.png?v=1660477909955";
+      } else {
+        Buttonsrc_M =
+          "https://cdn.glitch.global/44390784-7e95-45e7-b832-fab882e58d98/plus.png?v=1660477909955";
+      }
+
+      // Delete and renders the tables again
+      if (index === today) {
+        tableH.innerHTML = "";
+        renderTable(index, tableH, "", false);
+      } else {
+        tableM.innerHTML = "";
+        renderTable(index, tableM, "", false);
+      }
+      
+      if (dateM === false && dateD === false)
+      {
+        UpDa = JSON.stringify(actualObject);
+      }
+      else if ((dateM == true && index !== today) || (dateD === true && index !== tommorow))
+      {
+        UpDa = JSON.stringify(actualObject);
+      }
+      else if ((dateM === true && index === today) || (dateD === true && index === tommorow))
+      {
+        UpDaNeWe = JSON.stringify(actualObject);
+      }
+    }
+  }
+}
+
+// Function for Submit the changes to the server
+function SubmitEdit() {
+  if (ClickSubmit === 0) {
+    // Checking, if the button wasn't already pressed
+    SendUpdateServer();
+  }
+}
+
+function ValidInput(index, type) {
+  // Script for Validation of the input
+  var Obj;
+
+  // If no changes were made, the first version from the /info Request will be accessed
+   if ((dateD === true && index === tommorow) || TableDataNextWeek === undefined)
+  {
+    Obj = JSON.parse(UpDa);
+  }
+  else if ((dateM === true && index === today) || TableDataNextWeek === undefined){
+        Obj = JSON.parse(UpDa);
+  }
+  else if (UpDa === undefined)
+  {
+    Obj = TableData;
+  }
+  else
+  {
+    Obj = JSON.parse(UpDa);
+  }
+  
+  var ValidNumber = 0; // Variable to check for a valid input
+
+  let textInput = document.getElementById("TextFieldInput_" + index).value; // Get the text of the input
+  if (textInput === "") {
+    // Check for empty answers
+    alert("Das Feld darf nicht leer sein!");
+  } else if (textInput.length > 300) {
+    // Check for too long answers
+    alert("Deine Antwort ist zu lang!");
+  } else {
+    // If anything is okay, the ValidationNumber goes by one up
+    ValidNumber += 1;
+  }
+
+  if (type === "plus") {
+    // Additional Validation for the AddFunction
+
+    let DropDownValue = document.getElementById("fach_" + index).value; // Get the choosen subject from the dropdown
+    if (Obj[index].Subjects.indexOf(DropDownValue) !== -1) {
+      // Check, if the subject is already there
+      alert("Das Fach existiert bereits!");
+    } else {
+      ValidNumber += 1;
+    }
+
+    if (ValidNumber === 2) {
+      // Checks, if the Validation for the AddFunction was passed succesfully
+      Valid = true;
+    } else {
+      Valid = false;
+    }
+  } else {
+    if (ValidNumber === 1) {
+      // Checks, if the Validation for the SaveFunction was passed succesfully
+      Valid = true;
+    } else {
+      Valid = false;
+    }
+  }
+}
+
+var ButtonEditClick = 0; // Preventing spam/Bugs with the Edit ButFür Montag, den 22.8.2ton
+
+if (window.location.href === "https://10chub.glitch.me/") {
+  // Checks, if the user is at the front page
+    var EditButton = document.getElementById("SubmitEdit"); // Gets the editbutton from the frontpage
+
+    EditButton.addEventListener("click", (event) => {
+      if (ButtonEditClick === 0) {
+        ButtonEditClick = 1;
+        SetTimerEditButton();
+      // Function for checking permission of the user to edit the table
+      var EditPossibleRequest = new XMLHttpRequest(); //Request for Permission to edit the tables
+      EditPossibleRequest.open("GET", "https://10chub.glitch.me/checkEdit");
+
+      EditPossibleRequest.send();
+
+      EditPossibleRequest.onload = function () {
+        if (
+          EditPossibleRequest.status >= 200 &&
+          EditPossibleRequest.status < 400
+        ) {
+          var EditCheck = EditPossibleRequest.responseText;
+
+          if (EditCheck === "false") {
+            //Checks, if the user has the permisson to edit the tables
+            window.open("https://10chub.glitch.me/edit", (name = "_self"));
+          } else {
+            alert("Gerade bearbeitet jemand schon die Tabelle!");
+          }
+        } else {
+          console.log("We connected to the server, but it returned an error.");
+        }
+
+        EditPossibleRequest.onerror = function () {
+          console.log("Connection error");
+        }
+      }}
+    });
+  
+}
+
+function SendUpdateServer()
+{
+  ClickSubmit += 1; // Prevent submitting twice (empty string => no update/loss of information)
+    
+    UpdateServer = true;
+    // Preparing Post Request (Http Request)
+    var UpdateRequest = new XMLHttpRequest();
+
+    UpdateRequest.open("POST", "https://10chub.glitch.me/getUpdate");
+
+    UpdateRequest.setRequestHeader("Accept", "application/json");
+    UpdateRequest.setRequestHeader("Content-Type", "application/json");
+
+    UpdateRequest.onload = () => console.log(UpdateRequest.responseText);
+
+    UpdateRequest.onload = function () {
+      // After send the TableData
+      if (UpdateRequest.status >= 200 && UpdateRequest.status < 400) {
+      } else {
+        console.log("We connected to the server, but it returned an error.");
+      }
+
+      UpdateRequest.onerror = function () {
+        console.log("Connection error");
+      };
+    };
+  
+    if (dateM === false && dateD === false)
+    {
+      UpdateRequest.send(UpDa); 
+    }
+    else
+    {
+      UpdateRequest.send(UpDa, "");
+    }
+
+    // Request for setting the Edit mode available for anyone else
+    var FinishEditPost = new XMLHttpRequest();
+    FinishEditPost.open("GET", "https://10chub.glitch.me/finishedEdit");
+    FinishEditPost.send();
+    FinishEditPost.onload = function () {
+      window.open("https://10chub.glitch.me/", (name = "_self")); // Redirect to the main page after submitting the Update succesfully to the server
+    };
+}
+
+function SetTimerEditButton()
+{
+  var ResetTimer = 3;
+  setInterval(function(){
+        ResetTimer -= 1;
+        if (ResetTimer < 0)
+        {
+          ButtonEditClick = 0;
+          return;
+        }
+    }, 1000);
+}
